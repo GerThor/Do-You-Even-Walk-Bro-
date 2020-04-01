@@ -1,3 +1,7 @@
+#referenced official dart.dev site for advice on updating .gitignore file https://dart.dev/guides/libraries/private-files
+#Note: Except where noted, this page discusses only source code repositories, not app deployment. Some files that you wouldn’t 
+#normally put in a repository are useful or essential when you deploy an app.
+
 #files and directories created by pub:
 .dart_tool/
 .packages
