@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "408157181533",
+    "firebase_url": "https://doyouevenwalkbro.firebaseio.com",
+    "project_id": "doyouevenwalkbro",
+    "storage_bucket": "doyouevenwalkbro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:408157181533:android:91d9b1a12465ad351f1fb4",
+        "android_client_info": {
+          "package_name": "com.example.final_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "408157181533-qfe2jj9bm13jke7lolk0f62gtjq58goq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.final_project",
+            "certificate_hash": "39cb38b66e740a896b07a11f84d91d7abec77689"
+          }
+        },
+        {
+          "client_id": "408157181533-s5frkkrlgrs7smsofsec4jrl9f625ksl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIAhn9x_73sUiqkNNJTaSEKxTMtuzSbck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "408157181533-s5frkkrlgrs7smsofsec4jrl9f625ksl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

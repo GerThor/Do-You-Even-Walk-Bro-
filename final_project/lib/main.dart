@@ -6,6 +6,7 @@ import 'package:final_project/startWalk.dart';
 import 'package:final_project/walkHistory.dart';
 import 'package:final_project/friendsFeed.dart';
 
+
 //might add more pages such as startWalkStats page, and addFriends page haven't figured it out yet.
 
 void main() => runApp(MyApp());

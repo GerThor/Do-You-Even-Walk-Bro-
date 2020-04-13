@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:final_project/signIn.dart';
 
 class OurDrawer extends StatefulWidget {
   OurDrawer({Key key}) : super(key: key);
@@ -41,6 +42,7 @@ class _OurDrawer extends State<OurDrawer> {
           ListTile(
             title: Text("Walk History"),
             onTap: () {
+              print(name);
               Navigator.pushReplacementNamed(context, '/walkHistory');
             },
           ),
@@ -54,6 +56,7 @@ class _OurDrawer extends State<OurDrawer> {
             title: Text("Logout"),
             onTap: () {
               // Line below adapted from (see README.MD, Works Cited 1.)
+              signOutGoogle();
               Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
             },
           ),

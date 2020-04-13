@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:final_project/signIn.dart';
 
-//just a filler login button for now
+class LoginScreen extends StatefulWidget {
+  LoginScreen({Key key}) : super(key: key);
 
-class LoginScreen extends StatelessWidget {
+  _LoginScreen createState() => _LoginScreen();
+}
+
+
+class _LoginScreen extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +23,13 @@ class LoginScreen extends StatelessWidget {
           children: <Widget>[
             RaisedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/homePage');
+                signInWithGoogle().whenComplete(() {
+                  Navigator.pushNamed(context, '/homePage');
+                });
               },
-              child: Text("Login"),
+              child: Text("Google Login"),
             )
+          //_signInButton(context),
           ],
         )
       )
