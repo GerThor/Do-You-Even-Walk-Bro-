@@ -19,7 +19,8 @@ doc/api/
 .DS_Store
 
 #specific file
-AndroidManifest.xml
+final_project/android/app/src/main/AndroidManifest.xml
+android/app/src/main/AndroidManifest.xml
 
 
 
