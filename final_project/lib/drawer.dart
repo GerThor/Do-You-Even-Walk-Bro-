@@ -42,7 +42,8 @@ class _OurDrawer extends State<OurDrawer> {
           ListTile(
             title: Text("Walk History"),
             onTap: () {
-              print(name);
+              print(user_id);
+              print(name); // just testing that I can access a username
               Navigator.pushReplacementNamed(context, '/walkHistory');
             },
           ),
