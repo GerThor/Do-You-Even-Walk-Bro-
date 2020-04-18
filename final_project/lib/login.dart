@@ -14,7 +14,7 @@ class _LoginScreen extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: Text("Do You Even Walk Bro?"),
         centerTitle: true,
       ),
       body: Center(
@@ -24,7 +24,9 @@ class _LoginScreen extends State<LoginScreen> {
             RaisedButton(
               onPressed: () {
                 signInWithGoogle().whenComplete(() {
-                  Navigator.pushNamed(context, '/homePage');
+                  if (user_id != null) {
+                    Navigator.pushNamed(context, '/homePage');
+                  }
                 });
               },
               child: Text("Google Login"),

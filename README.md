@@ -4,3 +4,4 @@ A mobile walking app created by Ger Thor and Antonio Canongo. Do You Even Walk B
 Works Cited:
 1. https://medium.com/flutter-community/flutter-push-pop-push-1bb718b13c31 // drawer.dart
 2. https://medium.com/flutter-community/flutter-pageview-widget-e0f6c8092636 // startWalk.dart
+3. https://www.youtube.com/watch?v=McPzVZZRniU // googleMap.dart
