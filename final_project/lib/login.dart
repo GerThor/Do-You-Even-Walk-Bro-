@@ -23,11 +23,11 @@ class _LoginScreen extends State<LoginScreen> {
           children: <Widget>[
             RaisedButton(
               onPressed: () {
-                //signInWithGoogle().whenComplete(() {
-                  //if (user_id != null) {
+                signInWithGoogle().whenComplete(() {
+                  if (userId != null) {
                     Navigator.pushNamed(context, '/homePage');
-                  //}
-                //});
+                  }
+                });
               },
               child: Text("Google Login"),
             )

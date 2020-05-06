@@ -28,7 +28,7 @@ final GoogleSignIn googleSignIn = GoogleSignIn();
 String name;
 String email;
 String imageUrl;
-String user_id;
+String userId;
 
 Future<String> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -62,9 +62,9 @@ Future<String> signInWithGoogle() async {
 
   final FirebaseUser currentUser = await _auth.currentUser();
   assert(user.uid == currentUser.uid);
-  user_id = user.uid;
+  userId = user.uid;
 
-  print(user_id);
+  print(userId);
   print(name);
   print(email);
   return 'signInWithGoogle succeeded: $user';
@@ -72,7 +72,7 @@ Future<String> signInWithGoogle() async {
 
 void signOutGoogle() async {
   await googleSignIn.signOut();
-  user_id=null;
+  userId=null;
 
   print("User Sign Out");
 }

@@ -4,44 +4,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'dart:core';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 
 
 
 // Do Google Map work here
-
-//Anonymous Version
-//googleMap() {
-//  return Scaffold(
-//    body: SingleChildScrollView(
-//        child: Column(
-//            mainAxisAlignment: MainAxisAlignment.center,
-//            children: <Widget> [
-//              SizedBox(
-//                height:500,
-//                width: 400,
-//                child: GoogleMap(
-//                  mapType: MapType.normal,
-//                  initialCameraPosition: CameraPosition(
-//                    target: LatLng(40.688841, -74.044015),
-//                    zoom: 15,
-//                  ),
-//                ),
-//              ),
-//
-//              SizedBox(height:5),
-//              RaisedButton(
-//                onPressed: (){},
-//                child: Text("Start Walk"),
-//              )
-//            ]
-//        )
-//    ),
-//  );
-//}
-
-//Class Version
-
 class AGoogleMap extends StatefulWidget {
   AGoogleMap({Key key}) : super(key: key);
 
@@ -59,6 +27,16 @@ class _AGoogleMap extends State<AGoogleMap> {
   CameraPosition curCam;
   Marker marker;
 
+  var originLatitude = 0.0;
+  var originLongitude = 0.0;
+  var destLatitude;
+  var destLongitude;
+  String googleAPiKey = "AIzaSyDGfH2MCCY_swzUQL9ib8b9VrycXLK3oEM";
+  Map<PolylineId, Polyline> polylines = {};
+  List<LatLng> polylineCoordinates = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+
+
   @override
   void initState() {
     super.initState();
@@ -69,22 +47,15 @@ class _AGoogleMap extends State<AGoogleMap> {
     positionStream = geolocator.getPositionStream(locationOptions).listen(
             (Position aPosition) {
             curPosition = aPosition;
-//            posLat = double.parse(curPosition.latitude.toString());
-//            posLong = double.parse(curPosition.longitude.toString());
-//            curCam = CameraPosition(
-//                target: LatLng(posLong, posLong),
-//                zoom: 15
-//            );
             if (controller != null) {
               controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
                   target: LatLng(curPosition.latitude, curPosition.longitude),
                   tilt: 0,
-                  zoom: 15)));
+                  zoom: 17)));
+              // use zoom 17 or 18 for demo
               updateMarker(curPosition);
-              print(curPosition == null ? 'Unknown' : curPosition.latitude.toString() +
-                  ', ' + curPosition.longitude.toString());
+              updatePolyLines(curPosition);
             }
-            //getLocation();
         });
 
   }
@@ -106,12 +77,12 @@ class _AGoogleMap extends State<AGoogleMap> {
                 zoom: 15,
               ),
               markers: Set.of((marker != null) ? [marker] : []),
+              polylines: Set<Polyline>.of(polylines.values),
               onMapCreated: (GoogleMapController aController) {
                 controller = aController;
               },
             ),
           ),
-
           SizedBox(height:5),
           RaisedButton(
             onPressed: startWalk,
@@ -119,10 +90,10 @@ class _AGoogleMap extends State<AGoogleMap> {
           ),
           RaisedButton(
             onPressed: dispose,
-            child: Text("Cancel Subscr"),
+            child: Text("End Walk"),
           ),
-          SizedBox(height:2000),
-          Text("You reached Bottom")
+          SizedBox(height:400),
+          Text("You reached the Bottom")
         ]
       )
     ),
@@ -150,22 +121,53 @@ class _AGoogleMap extends State<AGoogleMap> {
   void updateMarker(Position newPosition) {
 
     setState(() {
-      LatLng latlng = LatLng(newPosition.latitude, newPosition.longitude);
+      LatLng latLng = LatLng(newPosition.latitude, newPosition.longitude);
       marker = Marker(
         markerId: MarkerId("mark"),
         draggable: false,
-        position: latlng,
-        //flat: true,
+        position: latLng,
         icon: BitmapDescriptor.defaultMarker,
       );
       print("NewMarker");
     });
   }
 
+  void updatePolyLines(Position newPosition) async {
+    if (originLatitude == 0.0 && originLongitude == 0.0) {
+      originLatitude = newPosition.latitude;
+      originLongitude = newPosition.longitude;
+    }
+    destLatitude = newPosition.latitude;
+    destLongitude = newPosition.longitude;
+    List<PointLatLng> result = await polylinePoints.getRouteBetweenCoordinates(googleAPiKey,
+        originLatitude, originLongitude, destLatitude, destLongitude);
+
+    if (result.isNotEmpty) {
+      result.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+    setState(() {
+      PolylineId id = PolylineId("poly");
+      Polyline polyline = Polyline (
+        polylineId: id, color: Colors.blue, points: polylineCoordinates);
+      polylines[id] = polyline;
+    });
+    print(result);
+  }
+
   @override
   void dispose() {
     if (positionStream != null) {
       positionStream.cancel();
+      if (controller != null) {
+        controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
+            target: LatLng(37.43296265331129, -122.08832357078792),
+            tilt: 0,
+            zoom: 15)));
+
+        // insert miles, steps, calories into firebase
+      }
     }
     super.dispose();
   }

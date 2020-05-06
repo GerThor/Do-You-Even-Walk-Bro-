@@ -11,8 +11,14 @@ class HomePageScreen extends StatelessWidget {
           centerTitle: true,
         ),
         drawer: OurDrawer(),
-        body: Center(
-          child: Text("Just some filler text for HomePage.")
+        body: Column(
+            children: <Widget>[
+              SizedBox(height: 20),
+              Text("Welcome to the Do You Even Walk Bro? app. To get started head over to the Profile page to fill out "
+              "your profile. Next head over to the StartWalk page to begin walking and making or losing gains today! View "
+              "your most recent 20 walk results in the WalkHistory page, or add friends and see their recent walks in the "
+              "Friends Feed page.")
+        ]
         )
     );
   }
