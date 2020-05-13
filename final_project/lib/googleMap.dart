@@ -1,12 +1,12 @@
-//import 'package:final_project/startWalk.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'dart:core';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_project/signIn.dart';
+import 'package:pedometer/pedometer.dart';
 
 
 // Do Google Map work here
@@ -36,14 +36,49 @@ class _AGoogleMap extends State<AGoogleMap> {
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Pedometer pedometer;
+  StreamSubscription<int> pedometerSub;
+  String _stepCountValue = '?';
+  String milesCount = "?";
+  String caloriesCount = "?";
 
   @override
   void initState() {
     super.initState();
   }
 
+  // adapted from https://medium.com/@atul.sharma_94062/how-to-use-cloud-firestore-with-flutter-e6f9e8821b27
+  void _addData () async {
+    final CollectionReference reference = Firestore.instance.collection("/WalkHistory");
+    await reference
+        .add({ //.add() will randomly generate document ID
+      'UserID': userId,
+      'User': name,
+      'Steps': _stepCountValue,
+      'Calories': caloriesCount,
+      'Miles': milesCount,
+      'Created': DateTime.now()
+    });
+
+    print(DateTime.now());
+    _displaySnackBar(context, "Added Data to WalkHistory and Ended Walk");
+
+  }
+
+  Future<void> initPlatformState() async {
+    startListening();
+  }
+
+  void startListening() {
+    pedometer = new Pedometer();
+    pedometerSub = pedometer.pedometerStream.listen(_onData, cancelOnError: true);
+  }
+
   void startWalk() async {
     print("startWalk");
+    initPlatformState();
     positionStream = geolocator.getPositionStream(locationOptions).listen(
             (Position aPosition) {
             curPosition = aPosition;
@@ -57,12 +92,13 @@ class _AGoogleMap extends State<AGoogleMap> {
               updatePolyLines(curPosition);
             }
         });
-
+    _displaySnackBar(context, "Starting Walk");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
     body: SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -92,6 +128,13 @@ class _AGoogleMap extends State<AGoogleMap> {
             onPressed: dispose,
             child: Text("End Walk"),
           ),
+          SizedBox(height:5),
+          Text("$_stepCountValue" + " Steps taken"),
+          Text("$caloriesCount" + " Calories Burned"),
+          Text("$milesCount" + " Distance Traveled in Miles"),
+          SizedBox(height:10),
+          Text("Currently a bug where pedometer doesn't reset values at all unless I think the phone is restarted, so the steps just keep growing. Step counts also don't start during successive Start and End Walks. Replace the "
+              "page to get counters to work again. Map does work for successive Start and End walks though. Step counter may be slow, so be patient with it."),
           SizedBox(height:400),
           Text("You reached the Bottom")
         ]
@@ -99,24 +142,6 @@ class _AGoogleMap extends State<AGoogleMap> {
     ),
   );
   }
-
-
-
-//  Future<void> updateLocation(CameraPosition newCam, Position newPosition) async {
-//    final GoogleMapController aController = await controller.future;
-//    var newLat = double.parse(newPosition.latitude.toString());
-//    var newLong = double.parse(newPosition.longitude.toString());
-//    setState(() {
-//      aController.animateCamera(CameraUpdate.newCameraPosition(newCam));
-//      marker = Marker(
-//        markerId: MarkerId("mark"),
-//        draggable: false,
-//        position: LatLng(newLat, newLong),
-//        //flat: true,
-//        icon: BitmapDescriptor.defaultMarker,
-//      );
-//    });
-//  }
 
   void updateMarker(Position newPosition) {
 
@@ -165,13 +190,34 @@ class _AGoogleMap extends State<AGoogleMap> {
             target: LatLng(37.43296265331129, -122.08832357078792),
             tilt: 0,
             zoom: 15)));
-
-        // insert miles, steps, calories into firebase
       }
+      _addData();
+    }
+    if(pedometerSub != null) {
+      pedometerSub.cancel();
+      setState(() {
+        _stepCountValue = "?";
+        caloriesCount = "?";
+        milesCount = "?";
+      });
+
     }
     super.dispose();
   }
 
+  _displaySnackBar(BuildContext context, String text) {
+    final snackBar = SnackBar(content: Text(text));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  void _onData(int stepValue) async {
+    setState(() => _stepCountValue = "$stepValue");
+    setState(() {
+      caloriesCount = (stepValue.toDouble() * 0.04).toString();
+      milesCount = (stepValue.toDouble() * 0.00047).toString();
+    });
+    print(_stepCountValue);
+  }
 }
 
 

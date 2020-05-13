@@ -14,28 +14,10 @@ class WalkHistory extends StatefulWidget {
 class _WalkHistory extends State<WalkHistory> {
   List<String> history = [];
   Stream<QuerySnapshot> query = Firestore.instance.collection('WalkHistory')
-        .where('UserID', isEqualTo: userId)
+      .where('UserID', isEqualTo: userId)
         .orderBy('Created', descending: true)
-        .limit(10)
+        .limit(20)
         .snapshots();
-
-
-  // adapted from https://medium.com/@atul.sharma_94062/how-to-use-cloud-firestore-with-flutter-e6f9e8821b27
-  void _addData () async {
-    final CollectionReference reference = Firestore.instance.collection("/WalkHistory");
-    await reference // DYEWB Collection ID for final project
-        .add({ //.add() will randomly generate document ID
-      'UserID': userId,
-      'User': name,
-      'Steps': '121212',
-      'Calories': '5361',
-      'Miles': '20',
-      'Created': DateTime.now()
-    });
-
-    print(DateTime.now());
-
-  }
 
   @override
   initState() {
@@ -51,41 +33,45 @@ class _WalkHistory extends State<WalkHistory> {
         centerTitle: true,
       ),
       drawer: OurDrawer(),
-      body: Center(
-        child:Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget> [
-            Text("Just some filler text for Walk History Page."),
-            RaisedButton(
-              onPressed: _addData,
-              child: Text("Add Data"),
-            ),
+      body: SingleChildScrollView(
+        child: Center(
+          child:Column(
+            children: <Widget> [
+              Text("Add data to this page by starting a walk and ending a walk on the StartWalk page. "
+                  "You will receive a snackbar notification when you successfully end a walk and add data to this page. "
+                  "List is scrollable, limited to 20 as project deliverable. There is a bug where two data sets are added, and one data set is when "
+                  "I have reset values to a question mark, even though I only call my add function once."),
+              SizedBox(height:20),
               StreamBuilder(
-              stream: query,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return Text(
-                  'Loading Clicks...',
-                  style: TextStyle(color: Colors.white),
-                );
-                if (snapshot.hasError) {
-                  print("SNAPSHOT ERROR");
+                stream: query,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return Text(
+                    'Loading Clicks...',
+                    style: TextStyle(color: Colors.white),
+                  );
+                  if (snapshot.hasError) {
+                    print("SNAPSHOT ERROR");
+                  }
+                  if (snapshot.hasData) {
+                    print("SNAPSHOT HAS DATA");
+                  }
+                  return printHistory(snapshot);
                 }
-                if (snapshot.hasData) {
-                  print("SNAPSHOT HAS DATA");
-                }
-                return printHistory(snapshot);
-              }
-            ),
-          ]
-        )
+              ),
+            ]
+          )
+        ),
       )
     );
   }
 }
 
+
   printHistory(snapshot) {
+  int length = snapshot.data.documents.length - 1;
+  print(length);
   List<String> aList = [];
-  for (int index = 0; index <= 9; index++) {
+  for (int index = 0; index <= length; index++) {
     if (snapshot.data.documents[index] != null) {
       int timeStamp = snapshot.data.documents[index]['Created']
           .toDate()
@@ -110,3 +96,4 @@ class _WalkHistory extends State<WalkHistory> {
     }),
   );
   }
+

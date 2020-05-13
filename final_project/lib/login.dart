@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_project/signIn.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -26,6 +27,7 @@ class _LoginScreen extends State<LoginScreen> {
                 signInWithGoogle().whenComplete(() {
                   if (userId != null) {
                     Navigator.pushNamed(context, '/homePage');
+                    createProfile();
                   }
                 });
               },
@@ -37,4 +39,23 @@ class _LoginScreen extends State<LoginScreen> {
       )
     );
   }
+
+  Future createProfile() async {
+    final QuerySnapshot query = await Firestore.instance.collection('/Profiles')
+        .where('UserID', isEqualTo: userId)
+        .getDocuments();
+    if (query.documents.length > 0) {
+      return;
+    } else {
+      final CollectionReference reference = Firestore.instance.collection(
+          "/Profiles");
+      await reference
+          .add({ //.add() will randomly generate document ID
+        'UserID': userId,
+        'User': name,
+        'Friends': []
+      });
+    }
+  }
+
 }

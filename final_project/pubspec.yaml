@@ -31,6 +31,8 @@ dependencies:
   location: ^3.0.0
   flutter_polyline_points: ^0.1.0
   time_formatter: ^1.0.0+5
+  flutter_typeahead: ^1.8.1
+  pedometer: ^1.2.0
 
 dev_dependencies:
   flutter_test:
